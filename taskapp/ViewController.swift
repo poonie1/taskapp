@@ -91,7 +91,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 self.realm.delete(task)
                 tableView.deleteRows(at: [indexPath], with: .fade)
             }
-            
             // 未通知のローカル通知一覧をログ出力
             center.getPendingNotificationRequests { (requests: [UNNotificationRequest]) in
                 for request in requests {
@@ -100,17 +99,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     print("---------------/")
                 }
             }
-        } // --- ここまで変更 ---
+        }
         
-        // --- ここから ---
-        if editingStyle == .delete {
-            // データベースから削除する
-            try! realm.write {
-                self.realm.delete(self.taskArray[indexPath.row])
-                tableView.deleteRows(at: [indexPath], with: .fade)
-            }
-        } // --- ここまで追加 ---
-    }
+    } // --- ここまで変更 ---
+    
+    
     
     //検索ボタン押下時の呼び出しメソッド
     func searchBarSearchButtonClicked(_ testSearchBar: UISearchBar) {
@@ -121,15 +114,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         if(testSearchBar.text == "") {
             //検索文字列が空の場合はすべてを表示する。
-            taskArray = try! Realm().objects(Task.self).sorted(byKeyPath: "date", ascending: true)                } else{
-                //検索文字列を含むデータを検索結果配列に追加する。
-                let predicate = NSPredicate(format: "category == %@", testSearchBar.text!)
-                
-                taskArray = realm.objects(Task.self).filter(predicate)
-                
-                tableView.reloadData()
-                
-            }
+            taskArray = try! Realm().objects(Task.self).sorted(byKeyPath: "date", ascending: true)
+            tableView.reloadData()
+            
+        } else{
+            //検索文字列を含むデータを検索結果配列に追加する。
+            let predicate = NSPredicate(format: "category == %@", testSearchBar.text!)
+            
+            taskArray = realm.objects(Task.self).filter(predicate)
+            
+            tableView.reloadData()
+            
+        }
     }
     
     // segue で画面遷移する時に呼ばれる
@@ -148,5 +144,5 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewWillAppear(animated)
         tableView.reloadData()
     }
+    
 }
-
